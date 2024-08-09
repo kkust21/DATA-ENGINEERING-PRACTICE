@@ -1,0 +1,381 @@
+test> show dbs
+admin   40.00 KiB
+config  72.00 KiB
+local   80.00 KiB
+test> use ustdb
+switched to db ustdb
+ustdb> show dbs
+admin   40.00 KiB
+config  96.00 KiB
+local   80.00 KiB
+ustdb> use ustdb
+already on db ustdb
+ustdb> db.createCollection("Employee")
+{ ok: 1 }
+ustdb> show dbs
+admin    40.00 KiB
+config  108.00 KiB
+local    80.00 KiB
+ustdb     8.00 KiB
+ustdb> show collection
+MongoshInvalidInputError: [COMMON-10001] 'collection' is not a valid argument for "show".
+ustdb> show collections
+Employee
+ustdb> db.Employee.drop()
+true
+ustdb> show dbs
+admin    40.00 KiB
+config  108.00 KiB
+local    80.00 KiB
+ustdb> db.Employee.insertOne({first_name:"kavya",last_name:"Kumari"})
+{dmin    40.00 KiB
+  acknowledged: true,
+  insertedId: ObjectId('66b3125078acd3ae91228fb5')
+}
+ustdb> db.Employee.find
+[Function: find] AsyncFunction {
+  returnsPromise: true,
+  apiVersions: [ 1, Infinity ],
+  returnType: 'Cursor',
+  serverVersions: [ '0.0.0', '999.999.999' ],
+  topologies: [ 'ReplSet', 'Sharded', 'LoadBalanced', 'Standalone' ],
+  deprecated: false,
+  platforms: [ 'Compass', 'Browser', 'CLI' ],
+  isDirectShellCommand: false,
+  acceptsRawInput: false,
+  shellCommandCompleter: undefined,
+  help: [Function (anonymous)] Help
+}
+ustdb> show collections
+Employee
+ustdb> db.Employee.insert({first_name:"rohan",last_name:"K"})
+DeprecationWarning: Collection.insert() is deprecated. Use insertOne, insertMany, or bulkWrite.
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId('66b3149c78acd3ae91228fb6') }
+}
+ustdb> db.Employee.findOne
+[Function: findOne] AsyncFunction {
+  apiVersions: [ 1, Infinity ],
+  returnType: 'Document',
+  returnsPromise: true,
+  serverVersions: [ '0.0.0', '999.999.999' ],
+  topologies: [ 'ReplSet', 'Sharded', 'LoadBalanced', 'Standalone' ],
+  deprecated: false,
+  platforms: [ 'Compass', 'Browser', 'CLI' ],
+  isDirectShellCommand: false,
+  acceptsRawInput: false,
+  shellCommandCompleter: undefined,
+  help: [Function (anonymous)] Help
+}
+ustdb> db.Employee.findOne
+[Function: findOne] AsyncFunction {
+  apiVersions: [ 1, Infinity ],
+  returnType: 'Document',
+  returnsPromise: true,
+  serverVersions: [ '0.0.0', '999.999.999' ],
+  topologies: [ 'ReplSet', 'Sharded', 'LoadBalanced', 'Standalone' ],
+  deprecated: false,
+  platforms: [ 'Compass', 'Browser', 'CLI' ],
+  isDirectShellCommand: false,
+  acceptsRawInput: false,
+  shellCommandCompleter: undefined,
+  help: [Function (anonymous)] Help
+}
+ustdb> db.Employee.find(first_name:"kavya")
+Uncaught:
+SyntaxError: Unexpected token, expected "," (1:27)
+
+> 1 | db.Employee.find(first_name:"kavya")
+    |                            ^
+  2 |
+
+ustdb> db.Employee.find({first_name:"kavya"})
+[
+  {
+    _id: ObjectId('66b3125078acd3ae91228fb5'),
+    first_name: 'kavya',
+    last_name: 'Kumari'
+  }
+]
+ustdb> db.Employee.findOne()
+{
+  _id: ObjectId('66b3125078acd3ae91228fb5'),
+  first_name: 'kavya',
+  last_name: 'Kumari'
+}
+ustdb> db.Employee.updateOne()
+MongoshInvalidInputError: [COMMON-10001] Missing required argument at position 0 (Collection.updateOne)
+ustdb> db.Employee.updateOne({name:"rohan"}, $set:{age:29} )
+Uncaught:
+SyntaxError: Unexpected token, expected "," (1:42)
+
+> 1 | db.Employee.updateOne({name:"rohan"}, $set:{age:29} )
+    |                                           ^
+  2 |
+
+ustdb> db.Employee.updateOne({name:"rohan"}, {$set:{age:29} })
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 0
+}
+ustdb> db.Employee.updateOne({first_name:"rohan"}, {$set:{age:29} })
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+ustdb> db.Employee.updateOne({first_name:"Krishna"}, {$set:{age:29} })
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+ustdb> db.Employee.updateOne({first_name:"Krishna"}, {$set:{age:28} })
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+ustdb> db.Employee.find({age:{$ne:30}}{_id:0})
+Uncaught:
+SyntaxError: Unexpected token, expected "," (1:31)
+
+> 1 | db.Employee.find({age:{$ne:30}}{_id:0})
+    |                                ^
+  2 |
+
+ustdb> db.Employee.find({age:{$gt:27}})
+[
+  {
+    _id: ObjectId('66b3149c78acd3ae91228fb6'),
+    first_name: 'rohan',
+    last_name: 'K',
+    age: 29
+  },
+  {
+    _id: ObjectId('66b3177003c1320722ac12bb'),
+    first_name: 'Krishna',
+    last_name: 'Kav',
+    age: 28
+  }
+]
+ustdb> db.Employee.find({age:{$gt:28}},{_id:0})
+[ { first_name: 'rohan', last_name: 'K', age: 29 } ]
+ustdb> db.emp.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1})
+
+ustdb> db.emp.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1})
+
+ustdb> db.Employee.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1})
+[
+  {
+    _id: ObjectId('66b3149c78acd3ae91228fb6'),
+    first_name: 'rohan',
+    last_name: 'K'
+  },
+  {
+    _id: ObjectId('66b3177003c1320722ac12bb'),
+    first_name: 'Krishna',
+    last_name: 'Kav'
+  },
+  {
+    _id: ObjectId('66b3125078acd3ae91228fb5'),
+    first_name: 'kavya',
+    last_name: 'Kumari'
+  }
+]
+ustdb> db.Employee.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1}).preety()
+TypeError: db.Employee.fi ... e:-1}).preety is not a function
+ustdb> db.Employee.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1}).prety()
+TypeError: db.Employee.fi ... e:-1}).prety is not a function
+ustdb> db.Employee.find({},{first_name:1, last_name:1}).sort({last_name:1,first_name:-1}).pretty()
+[
+  {
+    _id: ObjectId('66b3149c78acd3ae91228fb6'),
+    first_name: 'rohan',
+    last_name: 'K'
+  },
+  {
+    _id: ObjectId('66b3177003c1320722ac12bb'),
+    first_name: 'Krishna',
+    last_name: 'Kav'
+  },
+  {
+    _id: ObjectId('66b3125078acd3ae91228fb5'),
+    first_name: 'kavya',
+    last_name: 'Kumari'
+  }
+]
+ustdb> use inventory
+switched to db inventory
+inventory> show dbs
+admin    40.00 KiB
+config  108.00 KiB
+local    80.00 KiB
+ustdb    72.00 KiB
+inventory> db createcollection("inventory")
+Uncaught:
+SyntaxError: Missing semicolon. (1:2)
+
+> 1 | db createcollection("inventory")
+    |   ^
+  2 |
+
+inventory> db.createcollection("inventory")
+TypeError: db.createcollection is not a function
+inventory> db.create collection("inventory")
+Uncaught:
+SyntaxError: Missing semicolon. (1:9)
+
+> 1 | db.create collection("inventory")
+    |          ^
+  2 |
+
+inventory> db.createcollections("inventory")
+TypeError: db.createcollections is not a function
+inventory> db.createCollection("Inventory")
+{ ok: 1 }
+inventory> show collections
+Inventory
+inventory> db.inventory.insertMany([
+...
+... { item: "journal", qty: 25, tags: ["blank", "red"], dim_cm: [ 14, 21 ] },
+...
+... { item: "notebook", qty: 50, tags: ["red", "blank"], dim_cm: [ 14, 21 ] },
+...
+... { item: "paper", qty: 100, tags: ["red", "blank", "plain"], dim_cm: [ 14, 21 ] },
+...
+... { item: "planner", qty: 75, tags: ["blank", "red"], dim_cm: [ 22.85, 30 ] },
+...
+... { item: "postcard", qty: 45, tags: ["blue"], dim_cm: [ 10, 15.25 ] }
+...
+... ]);db.inventory.insertMany([
+...
+... { item: "journal", qty: 25, tags: ["blank", "red"], dim_cm: [ 14, 21 ] },
+...
+... { item: "notebook", qty: 50, tags: ["red", "blank"], dim_cm: [ 14, 21 ] },
+...
+... { item: "paper", qty: 100, tags: ["red", "blank", "plain"], dim_cm: [ 14, 21 ] },
+...
+... { item: "planner", qty: 75, tags: ["blank", "red"], dim_cm: [ 22.85, 30 ] },
+...
+... { item: "postcard", qty: 45, tags: ["blue"], dim_cm: [ 10, 15.25 ] }
+...
+...
+...
+... show dbs
+Uncaught:
+SyntaxError: Unexpected token, expected "," (27:0)
+
+  25 |
+  26 |
+> 27 | show dbs
+     | ^
+  28 |
+
+inventory> db.inventory.insertMany([
+...
+... { item: "journal", qty: 25, tags: ["blank", "red"], dim_cm: [ 14, 21 ] },
+...
+... { item: "notebook", qty: 50, tags: ["red", "blank"], dim_cm: [ 14, 21 ] },
+...
+... { item: "paper", qty: 100, tags: ["red", "blank", "plain"], dim_cm: [ 14, 21 ] },
+...
+... { item: "planner", qty: 75, tags: ["blank", "red"], dim_cm: [ 22.85, 30 ] },
+...
+... { item: "postcard", qty: 45, tags: ["blue"], dim_cm: [ 10, 15.25 ] }
+...
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('66b347e478acd3ae91228fb7'),
+    '1': ObjectId('66b347e478acd3ae91228fb8'),
+    '2': ObjectId('66b347e478acd3ae91228fb9'),
+    '3': ObjectId('66b347e478acd3ae91228fba'),
+    '4': ObjectId('66b347e478acd3ae91228fbb')
+  }
+}
+inventory> db.inventory.find({qty:{$qte:50}})
+MongoServerError[BadValue]: unknown operator: $qte
+inventory> db.inventory.find({qty:{$gte:50}})
+[
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb8'),
+    item: 'notebook',
+    qty: 50,
+    tags: [ 'red', 'blank' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb9'),
+    item: 'paper',
+    qty: 100,
+    tags: [ 'red', 'blank', 'plain' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fba'),
+    item: 'planner',
+    qty: 75,
+    tags: [ 'blank', 'red' ],
+    dim_cm: [ 22.85, 30 ]
+  }
+]
+inventory> db.inventory.find({tags:{$in:["red","black"]}})
+[
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb7'),
+    item: 'journal',
+    qty: 25,
+    tags: [ 'blank', 'red' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb8'),
+    item: 'notebook',
+    qty: 50,
+    tags: [ 'red', 'blank' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb9'),
+    item: 'paper',
+    qty: 100,
+    tags: [ 'red', 'blank', 'plain' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fba'),
+    item: 'planner',
+    qty: 75,
+    tags: [ 'blank', 'red' ],
+    dim_cm: [ 22.85, 30 ]
+  }
+]
+inventory> db.inventory.find({$or:[{qty:100},{item:"notebook"}]})
+[
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb8'),
+    item: 'notebook',
+    qty: 50,
+    tags: [ 'red', 'blank' ],
+    dim_cm: [ 14, 21 ]
+  },
+  {
+    _id: ObjectId('66b347e478acd3ae91228fb9'),
+    item: 'paper',
+    qty: 100,
+    tags: [ 'red', 'blank', 'plain' ],
+    dim_cm: [ 14, 21 ]
+  }
+]
